@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <div style="width: 360px; height: 800px; position: relative; background: white; overflow: hidden">
+        <div style="left: 34px; top: 112px; position: absolute; color: black; font-size: 32px; font-family: Inter; font-weight: 600; word-wrap: break-word">Create a new<br/>account</div>
+
+        <div style="left: 34px; top: 233px; position: absolute; color: black; font-size: 16px; font-family: Inter; font-weight: 600; word-wrap: break-word">Name:</div>
+        <input type="text" placeholder="John Doe" style="width: 305px; height: 32px; left: 34px; top: 260px; position: absolute; border: none; border-bottom: 1px solid #000; opacity: 0.6; font-size: 16px; font-family: Inter; outline: none; background: transparent;">
+
+        <div style="left: 34px; top: 364px; position: absolute; color: black; font-size: 16px; font-family: Inter; font-weight: 600; word-wrap: break-word">Email:</div>
+        <input type="email" placeholder="JohnDoe@email.com" style="width: 305px; height: 32px; left: 34px; top: 391px; position: absolute; border: none; border-bottom: 1px solid #000; opacity: 0.6; font-size: 16px; font-family: Inter; outline: none; background: transparent;">
+        
+        <div style="left: 34px; top: 486px; position: absolute; color: black; font-size: 16px; font-family: Inter; font-weight: 600; word-wrap: break-word">Password:</div>
+        <input id="passwordInput" type="password" placeholder="Enter your password" style="width: 270px; height: 32px; left: 34px; top: 513px; position: absolute; border: none; border-bottom: 1px solid #000; opacity: 0.6; font-size: 16px; font-family: Inter; outline: none; background: transparent; padding-right: 30px;">
+        <span id="togglePassword" style="position: absolute; left: 310px; top: 520px; cursor: pointer; font-size: 18px; user-select: none; display: flex; align-items: center;">
+          <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;"><ellipse cx="12" cy="12" rx="9" ry="5"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><ellipse cx="12" cy="12" rx="9" ry="5"/><line x1="1" y1="23" x2="23" y2="1"/></svg>
+        </span>
+
+        <div style="left: 81px; top: 733px; position: absolute; color: #726060; font-size: 15px; font-family: Inter; font-weight: 600; word-wrap: break-word">Already have an account?</div>
+
+        <a href="login.html" style="text-decoration: none;"><div style="left: 255px; top: 733px; position: absolute; color: black; font-size: 15px; font-family: Inter; font-weight: 700; word-wrap: break-word">Login</div></a>
+
+        <div style="width: 305px; height: 54px; left: 34px; top: 612px; position: absolute; background: black; border-radius: 40px"></div>
+        
+        <div style="left: 157px; top: 630px; position: absolute; color: white; font-size: 16px; font-family: Inter; font-weight: 600; word-wrap: break-word">Sign up</div>
+      </div>
+
+<script>
+  const passwordInput = document.getElementById('passwordInput');
+  const togglePassword = document.getElementById('togglePassword');
+  const eyeOpen = document.getElementById('eyeOpen');
+  const eyeClosed = document.getElementById('eyeClosed');
+  let passwordVisible = false;
+  togglePassword.addEventListener('click', function() {
+    passwordVisible = !passwordVisible;
+    passwordInput.type = passwordVisible ? 'text' : 'password';
+    eyeOpen.style.display = passwordVisible ? 'none' : 'inline';
+    eyeClosed.style.display = passwordVisible ? 'inline' : 'none';
+  });
+</script>
+
+</body>
+</html>
+
