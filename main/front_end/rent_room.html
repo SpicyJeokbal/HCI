@@ -5,12 +5,183 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+      }
+      #map {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 1;
+      }
+      /* Draggable modal styles */
+      #bottom-modal {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100vw;
+        margin: 0 auto;
+        background: #fff;
+        border-top-left-radius: 32px;
+        border-top-right-radius: 32px;
+        box-shadow: 0 -8px 32px 0 rgba(128, 90, 213, 0.15), 0 -2px 16px rgba(0,0,0,0.10);
+        z-index: 1000;
+        transition: transform 0.18s cubic-bezier(.4,2,.6,1), height 0.18s;
+        height: 120px;
+        min-height: 40px;
+        max-height: 90%;
+        overflow: hidden;
+        touch-action: none;
+        padding-bottom: env(safe-area-inset-bottom, 16px);
+      }
+      #modal-handle {
+        width: 48px;
+        height: 6px;
+        background: #d1c4e9;
+        border-radius: 3px;
+        margin: 16px auto 16px auto;
+        cursor: grab;
+        box-shadow: 0 1px 4px rgba(128,90,213,0.10);
+      }
+      #modal-content {
+        padding: 20px 20px 20px 20px;
+        overflow-y: auto;
+        max-height: calc(90vh - 40px);
+      }
+      .modal-search {
+        width: 100%;
+        padding: 12px 44px 12px 16px;
+        border-radius: 16px;
+        border: 1.5px solid #e0e0e0;
+        margin-bottom: 18px;
+        font-size: 16px;
+        background: #faf8ff;
+        box-sizing: border-box;
+        outline: none;
+      }
+      .modal-search:focus {
+        border-color: #a084e8;
+        background: #fff;
+      }
+      .modal-search-icon {
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 22px;
+        height: 22px;
+        pointer-events: none;
+      }
+      .modal-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .modal-btn, .modal-select {
+        border-radius: 20px;
+        border: none;
+        padding: 8px 18px;
+        background: #f3eaff;
+        font-size: 15px;
+        color: #6c4ab6;
+        font-weight: 500;
+        box-shadow: 0 1px 2px rgba(128,90,213,0.04);
+      }
+      .modal-btn:active, .modal-btn:focus, .modal-select:focus {
+        background: #e0d7fa;
+        outline: none;
+      }
+      .modal-select {
+        padding-right: 28px;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg fill="%236c4ab6" height="18" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 18px 18px;
+      }
+      .modal-slider {
+        width: 100%;
+        margin: 10px 0 0 0;
+        accent-color: #6c4ab6;
+        height: 4px;
+      }
+      .modal-slider::-webkit-slider-thumb {
+        background: #6c4ab6;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        box-shadow: 0 2px 6px rgba(128,90,213,0.15);
+      }
+      .modal-slider::-moz-range-thumb {
+        background: #6c4ab6;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        box-shadow: 0 2px 6px rgba(128,90,213,0.15);
+      }
+      .modal-slider::-ms-thumb {
+        background: #6c4ab6;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        box-shadow: 0 2px 6px rgba(128,90,213,0.15);
+      }
+      .modal-apply-btn {
+        width: 100%;
+        background: #111;
+        color: white;
+        border-radius: 20px;
+        padding: 16px 0;
+        font-size: 17px;
+        font-weight: 700;
+        border: none;
+        margin-top: 18px;
+        box-shadow: 0 2px 8px rgba(128,90,213,0.08);
+      }
+    </style>
 </head>
 <body>
     
-    <div style="width: 360px; height: 600px; position: relative; background: white; overflow: hidden">
+    <div id="map"></div>
 
-        <div id="map" style="height: 600px;"></div>
+    <div id="bottom-modal">
+      <div id="modal-handle"></div>
+      <div id="modal-content" style="display: none;">
+        <div style="position: relative; margin-bottom: 8px;">
+          <input class="modal-search" type="text" placeholder="XYZ Street" />
+          <svg class="modal-search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke="#a084e8" stroke-width="2" fill="none"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke="#a084e8" stroke-width="2"/></svg>
+        </div>
+        <div class="modal-row">
+          <button class="modal-btn">Apt type</button>
+          <button class="modal-btn">Rating</button>
+          <button class="modal-btn"># Occupants</button>
+        </div>
+        <div class="modal-row">
+          <select class="modal-select"><option>Lease Term</option></select>
+          <select class="modal-select"><option>Newest</option></select>
+        </div>
+        <div style="margin-bottom: 14px;">
+          <label style="font-size:14px;color:#6c4ab6;font-weight:500;">Price</label>
+          <input class="modal-slider" type="range" min="0" max="10000" value="1000" />
+        </div>
+        <div style="margin-bottom: 14px;">
+          <label style="font-size:14px;color:#6c4ab6;font-weight:500;">Amenities</label>
+          <input type="text" class="modal-search" placeholder="" style="margin-bottom:0;" />
+        </div>
+        <button class="modal-apply-btn">Apply Filter(4)</button>
+      </div>
     </div>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -46,6 +217,73 @@
         }
       }
       showUserLocation();
+
+      // Draggable modal logic
+      const modal = document.getElementById('bottom-modal');
+      const handle = document.getElementById('modal-handle');
+      const content = document.getElementById('modal-content');
+      let startY, startHeight, isDragging = false;
+      let collapsedHeight = 5;
+      let expandedHeight = 480;
+      function setModalHeight(h, snap = false) {
+        modal.style.height = h + 'px';
+        if (snap) {
+          modal.style.transition = 'transform 0.18s cubic-bezier(.4,2,.6,1), height 0.18s';
+        } else {
+          modal.style.transition = 'none';
+        }
+        if (h > collapsedHeight + 40) {
+          content.style.display = 'block';
+        } else {
+          content.style.display = 'none';
+        }
+      }
+      setModalHeight(collapsedHeight);
+      handle.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startY = e.clientY;
+        startHeight = modal.offsetHeight;
+        document.body.style.userSelect = 'none';
+      });
+      document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        let newHeight = startHeight - (e.clientY - startY);
+        newHeight = Math.max(collapsedHeight, Math.min(newHeight, window.innerHeight * 0.9));
+        setModalHeight(newHeight, false);
+      });
+      document.addEventListener('mouseup', () => {
+        if (!isDragging) return;
+        isDragging = false;
+        document.body.style.userSelect = '';
+        // Snap to collapsed or expanded
+        if (modal.offsetHeight > (collapsedHeight + expandedHeight) / 2) {
+          setModalHeight(expandedHeight, true);
+        } else {
+          setModalHeight(collapsedHeight, true);
+        }
+      });
+      // Touch events for mobile
+      handle.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        startY = e.touches[0].clientY;
+        startHeight = modal.offsetHeight;
+      });
+      document.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        let newHeight = startHeight - (e.touches[0].clientY - startY);
+        newHeight = Math.max(collapsedHeight, Math.min(newHeight, window.innerHeight * 0.9));
+        setModalHeight(newHeight, false);
+      });
+      document.addEventListener('touchend', () => {
+        if (!isDragging) return;
+        isDragging = false;
+        // Snap to collapsed or expanded
+        if (modal.offsetHeight > (collapsedHeight + expandedHeight) / 2) {
+          setModalHeight(expandedHeight, true);
+        } else {
+          setModalHeight(collapsedHeight, true);
+        }
+      });
     </script>
 
 
