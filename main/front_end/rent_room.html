@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Rent Room</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
       html, body {
         height: 100%;
         margin: 0;
         padding: 0;
+        font-family: Inter, Arial, sans-serif;
+        background: #fafafa;
       }
       body {
         width: 100vw;
@@ -24,44 +26,46 @@
         height: 100vh;
         z-index: 1;
       }
-      /* Draggable modal styles */
+      
       #bottom-modal {
         position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        width: 100vw;
-        margin: 0 auto;
-        background: #fff;
-        border-top-left-radius: 32px;
-        border-top-right-radius: 32px;
-        box-shadow: 0 -8px 32px 0 rgba(128, 90, 213, 0.15), 0 -2px 16px rgba(0,0,0,0.10);
-        z-index: 1000;
-        transition: transform 0.18s cubic-bezier(.4,2,.6,1), height 0.18s;
-        height: 120px;
-        min-height: 40px;
-        max-height: 90%;
-        overflow: hidden;
-        touch-action: none;
-        padding-bottom: env(safe-area-inset-bottom, 16px);
-      }
-      #modal-handle {
-        width: 48px;
-        height: 6px;
-        background: #d1c4e9;
-        border-radius: 3px;
-        margin: 16px auto 16px auto;
-        cursor: grab;
-        box-shadow: 0 1px 4px rgba(128,90,213,0.10);
-      }
-      #modal-content {
-        padding: 20px 20px 20px 20px;
+        top: 20px;
+        right: 20px;
+        left: auto;
+        bottom: auto;
+        width: 400px;
+        height: auto;
+        min-height: auto;
+        max-height: calc(100vh - 40px);
+        border-top-right-radius: 24px;
+        border-top-left-radius: 24px;
+        border-bottom-right-radius: 24px;
+        border-bottom-left-radius: 8px;
+        box-shadow: 0 2px 12px 0 rgba(128, 90, 213, 0.06);
+        border: 1.5px solid #e0e0e0;
+        padding-bottom: 0;
         overflow-y: auto;
-        max-height: calc(90vh - 40px);
+        transition: box-shadow 0.5s cubic-bezier(.4,2,.6,1), filter 0.5s cubic-bezier(.4,2,.6,1),
+                    opacity 0.5s cubic-bezier(.4,2,.6,1),
+                    transform 0.5s cubic-bezier(.4,2,.6,1);
+        transform-origin: top right;
+        opacity: 1;
+        filter: blur(0px);
+        display: block;
+        z-index: 3002;
+        background: #fff;
       }
+      #modal-handle { display: none; }
+      #modal-content {
+        display: block !important;
+        padding: 32px 32px 32px 32px;
+        max-height: none;
+        overflow-y: visible;
+      }
+      
       .modal-search {
         width: 100%;
-        padding: 12px 44px 12px 16px;
+        padding: 10px 44px 10px 16px;
         border-radius: 16px;
         border: 1.5px solid #e0e0e0;
         margin-bottom: 18px;
@@ -76,17 +80,18 @@
       }
       .modal-search-icon {
         position: absolute;
-        right: 20px;
-        top: 50%;
+        right: 18px;
+        top: 35%;
         transform: translateY(-50%);
-        width: 22px;
-        height: 22px;
+        height: 18px;
+        width: 18px;
         pointer-events: none;
       }
       .modal-row {
         display: flex;
         gap: 10px;
         margin-bottom: 14px;
+        flex-wrap: wrap;
       }
       .modal-btn, .modal-select {
         border-radius: 20px;
@@ -140,8 +145,8 @@
       }
       .modal-apply-btn {
         width: 100%;
-        background: #111;
-        color: white;
+        background: #6c4ab6;
+        color: #fff;
         border-radius: 20px;
         padding: 16px 0;
         font-size: 17px;
@@ -150,49 +155,133 @@
         margin-top: 18px;
         box-shadow: 0 2px 8px rgba(128,90,213,0.08);
       }
+      
+      /* Toggle button styles */
+      #toggle-modal-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 1001;
+        background: #fff;
+        border: 2px solid #6c4ab6;
+        border-radius: 12px;
+        padding: 12px;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(128, 90, 213, 0.15);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: block;
+        right: 20px;
+        left: auto;
+      }
+      
+      #toggle-modal-btn:hover {
+        background: #f3eaff;
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 8px 20px rgba(128, 90, 213, 0.25);
+        border-color: #5a3d99;
+      }
+      
+      #toggle-modal-btn:active {
+        transform: translateY(0) scale(1);
+        transition: all 0.1s ease;
+      }
+      
+      #toggle-modal-btn svg {
+        width: 20px;
+        height: 20px;
+        stroke: #6c4ab6;
+        stroke-width: 2;
+        fill: none;
+        transition: all 0.3s ease;
+      }
+      
+      #toggle-modal-btn:hover svg {
+        stroke: #5a3d99;
+        transform: rotate(5deg);
+      }
+
+      /* Remove desktop-only media query for filter modal and toggle button */
+      .hidden {
+        display: none !important;
+      }
     </style>
 </head>
 <body>
+  
+  <a href="landing_page.html" id="back-to-home-link" style="position: fixed; top: 20px; left: 20px; z-index: 2000; text-decoration: none; color: #6c4ab6; font-weight: 700; font-size: 22px; background: #fff; border-radius: 12px; border: 1.5px solid #e0e0e0; padding: 10px 18px; box-shadow: 0 2px 8px rgba(128,90,213,0.06); transition: border-color 0.2s, box-shadow 0.2s; display: flex; align-items: center; justify-content: center;">&#8592;</a><div id="map"></div>
+
     
-    <div id="map"></div>
+    <!-- Heatmap toggle button -->
+    <label id="toggle-heatmap-btn" style="position:fixed;top:20px;right:440px;z-index:3001;display:flex;align-items:center;cursor:pointer;">
+      <input type="checkbox" id="heatmap-switch" style="display:none;">
+      <span id="heatmap-slider" style="width:48px;height:28px;background:#42a5e5;border-radius:20px;position:relative;display:inline-block;transition:background 0.3s;">
+        <span style="position:absolute;top:4px;left:4px;width:20px;height:20px;background:#f2f4f7;border-radius:50%;transition:left 0.3s;"></span>
+      </span>
+    </label>
 
     <div id="bottom-modal">
       <div id="modal-handle"></div>
-      <div id="modal-content" style="display: none;">
+      <div id="modal-content">
         <div style="position: relative; margin-bottom: 8px;">
           <input class="modal-search" type="text" placeholder="XYZ Street" />
           <svg class="modal-search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke="#a084e8" stroke-width="2" fill="none"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke="#a084e8" stroke-width="2"/></svg>
         </div>
         <div class="modal-row">
-          <button class="modal-btn">Apt type</button>
-          <button class="modal-btn">Rating</button>
-          <button class="modal-btn"># Occupants</button>
+          <select class="modal-select" id="apt-type-select">
+            <option value="any">Any Apt Type</option>
+            <option value="apartment">Apartment</option>
+            <option value="condo">Condo</option>
+            <option value="house">House</option>
+            <option value="dorm">Dorm House</option>
+          </select>
+          <select class="modal-select" id="occupants-select">
+            <option value="any">Any # Occupants</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5+</option>
+          </select>
         </div>
         <div class="modal-row">
-          <select class="modal-select"><option>Lease Term</option></select>
-          <select class="modal-select"><option>Newest</option></select>
+          <select class="modal-select" id="lease-term-select">
+            <option value="any">Any Lease Term</option>
+            <option value="lt3">Less than 3 months</option>
+            <option value="5m">5 months</option>
+            <option value="8m">8 months</option>
+            <option value="10m">10 months</option>
+            <option value="1y">1 year</option>
+            <option value="gt1y">More than 1 year</option>
+          </select>
         </div>
         <div style="margin-bottom: 14px;">
           <label style="font-size:14px;color:#6c4ab6;font-weight:500;">Price</label>
-          <input class="modal-slider" type="range" min="0" max="10000" value="1000" />
+          <div style="font-size:16px;font-weight:600;color:#6c4ab6;margin-bottom:4px;">
+            ₱<span id="price-value-label">10000</span>
+          </div>
+          <input class="modal-slider" id="price-slider" type="range" min="0" max="100000" value="10000" />
         </div>
         <div style="margin-bottom: 14px;">
           <label style="font-size:14px;color:#6c4ab6;font-weight:500;">Amenities</label>
-          <input type="text" class="modal-search" placeholder="" style="margin-bottom:0;" />
+          <div id="amenities-chips" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;">
+            <button type="button" class="amenity-chip" data-amenity="WiFi">WiFi</button>
+            <button type="button" class="amenity-chip" data-amenity="Aircon">Aircon</button>
+            <button type="button" class="amenity-chip" data-amenity="Furnished">Furnished</button>
+            <button type="button" class="amenity-chip" data-amenity="Parking">Parking</button>
+          </div>
         </div>
-        <button class="modal-apply-btn">Apply Filter(4)</button>
+        <button class="modal-apply-btn" id="apply-filter-btn">Apply Filter</button>
       </div>
     </div>
-
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
     <script>
       const map = L.map('map', { zoomControl: false }).setView([14.5547, 121.0244], 15); // Example: Makati coords
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         detectRetina: true
       }).addTo(map);
       map.invalidateSize();
-
-      // Show user's real coordinates with a marker if available
+      
       function showUserLocation() {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
@@ -217,75 +306,569 @@
         }
       }
       showUserLocation();
+      
+      // Store marker references globally
+      let roomMarkers = [];
 
-      // Draggable modal logic
-      const modal = document.getElementById('bottom-modal');
-      const handle = document.getElementById('modal-handle');
-      const content = document.getElementById('modal-content');
-      let startY, startHeight, isDragging = false;
-      let collapsedHeight = 5;
-      let expandedHeight = 480;
-      function setModalHeight(h, snap = false) {
-        modal.style.height = h + 'px';
-        if (snap) {
-          modal.style.transition = 'transform 0.18s cubic-bezier(.4,2,.6,1), height 0.18s';
-        } else {
-          modal.style.transition = 'none';
+      // In-memory geocode cache
+      const geocodeCache = {};
+
+      async function geocodeAddress(address) {
+        if (geocodeCache[address]) return geocodeCache[address];
+        try {
+          const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`);
+          const geoData = await geoRes.json();
+          if (geoData && geoData.length > 0) {
+            const lat = parseFloat(geoData[0].lat);
+            const lon = parseFloat(geoData[0].lon);
+            geocodeCache[address] = { lat, lon };
+            return { lat, lon };
+          }
+        } catch (e) {
+          // fail silently
         }
-        if (h > collapsedHeight + 40) {
-          content.style.display = 'block';
-        } else {
-          content.style.display = 'none';
+        geocodeCache[address] = null;
+        return null;
+      }
+
+      // Fetch rooms from backend and add pins based on address
+      async function fetchRoomsAndAddPins() {
+        try {
+          // Remove existing markers before re-adding
+          roomMarkers.forEach(marker => map.removeLayer(marker));
+          roomMarkers = [];
+          const response = await fetch('http://localhost:3000/rooms');
+          const rooms = await response.json();
+          console.log('Fetched rooms:', rooms);
+          for (const room of rooms) {
+            if (room.address) {
+              let coords = await geocodeAddress(room.address);
+              if (coords) {
+                const marker = L.marker([coords.lat, coords.lon]);
+                marker.on('click', () => showRoomModal(room));
+                roomMarkers.push(marker);
+                if (!heatmapVisible) marker.addTo(map);
+              } else {
+                console.warn('No geocode result for:', room.address);
+              }
+            }
+          }
+          // If heatmap is visible, re-add it so it covers the pins
+          if (heatmapVisible) {
+            heatmapLayer.addTo(map);
+            setTimeout(() => {
+              const heatCanvas = document.querySelector('.leaflet-heatmap-layer, .leaflet-heat-layer');
+              if (heatCanvas) heatCanvas.style.zIndex = 500;
+            }, 100);
+          }
+        } catch (err) {
+          console.error('Error fetching or geocoding rooms:', err);
         }
       }
-      setModalHeight(collapsedHeight);
-      handle.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        startY = e.clientY;
-        startHeight = modal.offsetHeight;
-        document.body.style.userSelect = 'none';
-      });
-      document.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
-        let newHeight = startHeight - (e.clientY - startY);
-        newHeight = Math.max(collapsedHeight, Math.min(newHeight, window.innerHeight * 0.9));
-        setModalHeight(newHeight, false);
-      });
-      document.addEventListener('mouseup', () => {
-        if (!isDragging) return;
-        isDragging = false;
-        document.body.style.userSelect = '';
-        // Snap to collapsed or expanded
-        if (modal.offsetHeight > (collapsedHeight + expandedHeight) / 2) {
-          setModalHeight(expandedHeight, true);
+      fetchRoomsAndAddPins();
+
+      // Room Details Modal HTML
+      const modalHtml = `
+        <div id="room-details-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#fff; border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,0.18); z-index:3000; max-width:400px; width:90vw; padding:32px 24px;">
+          <button id="close-modal-btn" style="position:absolute; top:12px; right:16px; background:none; border:none; font-size:1.5em; color:#888; cursor:pointer;">&times;</button>
+          <button id="chat-modal-btn" title="Chat" style="position:absolute; top:12px; right:52px; background:none; border:none; cursor:pointer; padding:0;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#6c4ab6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+          </button>
+          <div id="room-details-content"></div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+      // Add review modal function (move this above showRoomModal to ensure it's defined)
+      async function showAddReviewModal(room, reviewToEdit) {
+        let reviewModal = document.getElementById('add-review-modal');
+        if (!reviewModal) {
+          reviewModal = document.createElement('div');
+          reviewModal.id = 'add-review-modal';
+          reviewModal.style.position = 'fixed';
+          reviewModal.style.top = '0';
+          reviewModal.style.left = '0';
+          reviewModal.style.width = '100vw';
+          reviewModal.style.height = '100vh';
+          reviewModal.style.background = 'rgba(0,0,0,0.25)';
+          reviewModal.style.display = 'flex';
+          reviewModal.style.alignItems = 'center';
+          reviewModal.style.justifyContent = 'center';
+          reviewModal.style.zIndex = '4100';
+          reviewModal.innerHTML = `
+            <div style="background:#fff;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.18);padding:32px 24px;max-width:350px;width:90vw;position:relative;">
+              <button id="close-add-review-btn" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:1.5em;color:#888;cursor:pointer;">&times;</button>
+              <h3 style="margin-top:0;color:#6c4ab6;">Write a Review</h3>
+              <input id="add-review-name" style="width:100%;margin-bottom:10px;padding:8px;border-radius:8px;border:1.5px solid #e0e0e0;font-size:1em;" placeholder="Your name" />
+              <textarea id="add-review-input" rows="4" style="width:100%;border-radius:8px;border:1.5px solid #e0e0e0;padding:8px;font-size:1em;resize:vertical;margin-bottom:16px;" placeholder="Write your review..."></textarea>
+              <button id="submit-add-review-btn" style="padding:10px 24px;border-radius:8px;background:#6c4ab6;color:#fff;font-weight:600;border:none;cursor:pointer;width:100%;">Submit Review</button>
+            </div>
+          `;
+          document.body.appendChild(reviewModal);
+        }
+        reviewModal.style.display = 'flex';
+        // Close logic
+        reviewModal.querySelector('#close-add-review-btn').onclick = function() {
+          reviewModal.style.display = 'none';
+        };
+        // Prefill if editing
+        const textarea = reviewModal.querySelector('#add-review-input');
+        const nameInput = reviewModal.querySelector('#add-review-name');
+        if (reviewToEdit) {
+          nameInput.value = reviewToEdit.name;
+          textarea.value = reviewToEdit.comment;
         } else {
-          setModalHeight(collapsedHeight, true);
+          nameInput.value = '';
+          textarea.value = '';
+        }
+        reviewModal.querySelector('#submit-add-review-btn').onclick = async function() {
+          const text = textarea.value.trim();
+          const name = nameInput.value.trim() || 'Anonymous';
+          if (!text) return;
+          try {
+            let response, result;
+            if (reviewToEdit && reviewToEdit.id) {
+              // Edit existing review
+              response = await fetch(`http://localhost:3000/reviews/${reviewToEdit.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, comment: text })
+              });
+            } else {
+              // New review
+              response = await fetch('http://localhost:3000/reviews', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ room_id: room.id, name, comment: text })
+              });
+            }
+            result = await response.json();
+            if (!response.ok) {
+              alert(result.message || 'Failed to save review');
+              return;
+            }
+            textarea.value = '';
+            nameInput.value = '';
+            reviewModal.style.display = 'none';
+            showRoomModal(room);
+          } catch (err) {
+            alert('Failed to save review');
+          }
+        };
+        // Dismiss modal on background click
+        reviewModal.onclick = function(e) {
+          if (e.target === reviewModal) reviewModal.style.display = 'none';
+        };
+      }
+
+      async function showRoomModal(room) {
+        const modal = document.getElementById('room-details-modal');
+        const content = document.getElementById('room-details-content');
+        let imagesHtml = '';
+        let urls = [];
+        if (room.image_url) {
+          try {
+            urls = typeof room.image_url === 'string' ? JSON.parse(room.image_url) : room.image_url;
+          } catch { urls = []; }
+        }
+        if (urls.length > 0) {
+          imagesHtml = `
+            <div class="modal-thumbnails" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+              ${urls.map((url, i) => `<img src="${url}" class="modal-thumb-img" data-idx="${i}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.10);">`).join('')}
+            </div>
+          `;
+        }
+        // Fetch reviews from backend
+        let reviews = [];
+        try {
+          const res = await fetch(`http://localhost:3000/reviews/${room.id}`);
+          reviews = await res.json();
+        } catch {}
+        content.innerHTML = `
+          ${imagesHtml}
+          <h2 style="margin-top:0;">${room.type || 'Room'}</h2>
+          <p><b>Address:</b> ${room.address || '-'}</p>
+          <p><b>Price:</b> ${room.rate || '-'}</p>
+          <p><b>Lease:</b> ${room.lease || '-'}</p>
+          <p><b>Max Occupants:</b> ${room.occupants || '-'}</p>
+          <p><b>Size:</b> ${room.size || '-'}</p>
+          <p><b>Move-in Date:</b> ${room.move_in_date ? room.move_in_date.slice(0,10) : '-'}</p>
+          <p><b>Amenities:</b> ${room.amenities ? JSON.parse(room.amenities).join(', ') : '-'}</p>
+          <p><b>Rules:</b> ${room.rules || '-'}</p>
+          <div class="review-section" style="margin-top:24px;padding:16px 12px 40px 12px;background:#faf8ff;border-radius:10px;border:1.5px solid #e0e0e0;min-height:60px;position:relative;">
+            <h3 style="margin:0 0 10px 0;font-size:1.1em;color:#6c4ab6;">Reviews</h3>
+            <div class="review-list">
+              ${reviews.length === 0 ? `<div style='color:#aaa;'>No reviews yet.</div>` : reviews.map(r => `
+                <div class="review-item" style="margin-bottom:10px;position:relative;">
+                  <div style="font-weight:600;">${r.name}</div>
+                  <div style="font-size:0.98em;color:#555;">${r.comment}</div>
+                  <div style="font-size:0.92em;color:#aaa;">${r.created_at ? r.created_at.slice(0,10) : ''}</div>
+                  <button class="edit-review-btn" data-review-id="${r.id}" data-review-name="${encodeURIComponent(r.name)}" data-review-comment="${encodeURIComponent(r.comment)}" style="position:absolute;top:8px;right:0;background:none;border:none;color:#6c4ab6;cursor:pointer;width:28px;height:28px;display:flex;align-items:center;justify-content:center;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6c4ab6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+                  </button>
+                </div>
+              `).join('')}
+            </div>
+            <button id="open-review-modal-btn" style="position:absolute;right:12px;bottom:12px;width:38px;height:38px;border-radius:50%;background:#6c4ab6;border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(108,74,182,0.10);cursor:pointer;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+            </button>
+          </div>
+        `;
+        modal.style.display = 'block';
+
+        // Lightbox logic
+        if (urls.length > 0) {
+          const thumbs = content.querySelectorAll('.modal-thumb-img');
+          thumbs.forEach((thumb, idx) => {
+            thumb.addEventListener('click', function(e) {
+              e.stopPropagation();
+              showLightbox(urls[idx]);
+            });
+          });
+        }
+        // Review modal logic
+        const openReviewBtn = content.querySelector('#open-review-modal-btn');
+        if (openReviewBtn) {
+          openReviewBtn.onclick = function(e) {
+            e.stopPropagation();
+            showAddReviewModal(room);
+          };
+        }
+        // Edit review logic
+        const editBtns = content.querySelectorAll('.edit-review-btn');
+        editBtns.forEach(btn => {
+          btn.onclick = function(e) {
+            e.stopPropagation();
+            const reviewId = btn.getAttribute('data-review-id');
+            const name = decodeURIComponent(btn.getAttribute('data-review-name'));
+            const comment = decodeURIComponent(btn.getAttribute('data-review-comment'));
+            showAddReviewModal(room, { id: reviewId, name, comment });
+          };
+        });
+      }
+
+      // Simple lightbox overlay
+      function showLightbox(url) {
+        let lightbox = document.getElementById('modal-lightbox');
+        if (!lightbox) {
+          lightbox = document.createElement('div');
+          lightbox.id = 'modal-lightbox';
+          lightbox.style.position = 'fixed';
+          lightbox.style.top = '0';
+          lightbox.style.left = '0';
+          lightbox.style.width = '100vw';
+          lightbox.style.height = '100vh';
+          lightbox.style.background = 'rgba(0,0,0,0.85)';
+          lightbox.style.display = 'flex';
+          lightbox.style.alignItems = 'center';
+          lightbox.style.justifyContent = 'center';
+          lightbox.style.zIndex = '4000';
+          lightbox.innerHTML = '<img id="lightbox-img" style="max-width:90vw;max-height:80vh;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.25);"><button id="close-lightbox-btn" style="position:absolute;top:32px;right:48px;font-size:2.5em;background:none;border:none;color:#fff;cursor:pointer;z-index:4100;">&times;</button>';
+          document.body.appendChild(lightbox);
+        }
+        lightbox.style.display = 'flex';
+        lightbox.querySelector('#lightbox-img').src = url;
+        lightbox.querySelector('#close-lightbox-btn').onclick = function() {
+          lightbox.style.display = 'none';
+        };
+        lightbox.onclick = function(e) {
+          if (e.target === lightbox) lightbox.style.display = 'none';
+        };
+      }
+      document.body.addEventListener('click', function(e) {
+        if (e.target && e.target.id === 'close-modal-btn') {
+          document.getElementById('room-details-modal').style.display = 'none';
         }
       });
-      // Touch events for mobile
-      handle.addEventListener('touchstart', (e) => {
-        isDragging = true;
-        startY = e.touches[0].clientY;
-        startHeight = modal.offsetHeight;
-      });
-      document.addEventListener('touchmove', (e) => {
-        if (!isDragging) return;
-        let newHeight = startHeight - (e.touches[0].clientY - startY);
-        newHeight = Math.max(collapsedHeight, Math.min(newHeight, window.innerHeight * 0.9));
-        setModalHeight(newHeight, false);
-      });
-      document.addEventListener('touchend', () => {
-        if (!isDragging) return;
-        isDragging = false;
-        // Snap to collapsed or expanded
-        if (modal.offsetHeight > (collapsedHeight + expandedHeight) / 2) {
-          setModalHeight(expandedHeight, true);
+
+      // --- Heatmap logic ---
+      let heatmapLayer = null;
+      let heatmapVisible = false;
+      // Example: You should replace this with real rental frequency data
+      let heatmapPoints = [
+        [14.5547, 121.0244, 1],    // Center
+        [14.5580, 121.0280, 0.8],  // Slightly NE
+        [14.5510, 121.0210, 0.7],  // Slightly SW
+        [14.5560, 121.0320, 0.6],  // East
+        [14.5525, 121.0275, 0.9],  // Slightly NW
+        [14.5555, 121.0255, 0.7]   // Near center
+      ];
+      function showHeatmap() {
+        if (!heatmapLayer) {
+          heatmapLayer = L.heatLayer(heatmapPoints, {
+            radius: 130,
+            blur: 50,
+            maxZoom: 17,
+            gradient: {
+              0.0: 'blue',
+              0.4: 'lime',
+              0.7: 'orange',
+              1.0: 'red'
+            }
+          });
+        }
+        heatmapLayer.addTo(map);
+        heatmapVisible = true;
+        setTimeout(() => {
+          const heatCanvas = document.querySelector('.leaflet-heatmap-layer, .leaflet-heat-layer');
+          if (heatCanvas) heatCanvas.style.zIndex = 500;
+        }, 100);
+        // Remove all pins from map
+        roomMarkers.forEach(marker => map.removeLayer(marker));
+      }
+      function hideHeatmap() {
+        if (heatmapLayer) map.removeLayer(heatmapLayer);
+        heatmapVisible = false;
+        // Re-add all pins to map
+        roomMarkers.forEach(marker => marker.addTo(map));
+      }
+      const heatmapSwitch = document.getElementById('heatmap-switch');
+      const heatmapSlider = document.getElementById('heatmap-slider');
+      function updateSwitchUI() {
+        if (heatmapVisible) {
+          heatmapSlider.style.background = '#42a5e5';
+          heatmapSlider.children[0].style.left = '24px';
         } else {
-          setModalHeight(collapsedHeight, true);
+          heatmapSlider.style.background = '#b0c4d9';
+          heatmapSlider.children[0].style.left = '4px';
+        }
+      }
+      heatmapSwitch.addEventListener('change', function() {
+        if (heatmapSwitch.checked) showHeatmap();
+        else hideHeatmap();
+        updateSwitchUI();
+      });
+      // Sync UI on show/hide
+      const origShowHeatmap = showHeatmap;
+      const origHideHeatmap = hideHeatmap;
+      showHeatmap = function() { origShowHeatmap(); heatmapSwitch.checked = true; updateSwitchUI(); };
+      hideHeatmap = function() { origHideHeatmap(); heatmapSwitch.checked = false; updateSwitchUI(); };
+      // Initialize
+      updateSwitchUI();
+
+      // Filtering logic
+      let lastRooms = [];
+      async function fetchRoomsAndAddPinsWithFilter() {
+        try {
+          roomMarkers.forEach(marker => map.removeLayer(marker));
+          roomMarkers = [];
+          const response = await fetch('http://localhost:3000/rooms');
+          const rooms = await response.json();
+          lastRooms = rooms;
+          applyRoomFilterAndPins();
+        } catch (err) {
+          console.error('Error fetching or geocoding rooms:', err);
+        }
+      }
+      function applyRoomFilterAndPins() {
+        roomMarkers.forEach(marker => map.removeLayer(marker));
+        roomMarkers = [];
+        const leaseTerm = document.getElementById('lease-term-select').value;
+        const aptType = document.getElementById('apt-type-select').value;
+        const occupants = document.getElementById('occupants-select').value;
+        const price = Number(document.getElementById('price-slider').value);
+        let filteredRooms = lastRooms;
+        // Lease term filter
+        if (leaseTerm !== 'any') {
+          filteredRooms = filteredRooms.filter(room => {
+            if (!room.lease) return false;
+            const lease = room.lease.toLowerCase();
+            if (leaseTerm === 'lt3') return /([1-2]\s*month)/.test(lease) || lease.includes('less than 3');
+            if (leaseTerm === '5m') return lease.includes('5 month');
+            if (leaseTerm === '8m') return lease.includes('8 month');
+            if (leaseTerm === '10m') return lease.includes('10 month');
+            if (leaseTerm === '1y') return lease.includes('1 year');
+            if (leaseTerm === 'gt1y') return /([2-9]\s*year|more than 1 year|over 1 year|\d+\s*years)/.test(lease);
+            return true;
+          });
+        }
+        // Apt type filter
+        if (aptType !== 'any') {
+          filteredRooms = filteredRooms.filter(room => {
+            if (!room.type) return false;
+            return room.type.toLowerCase().includes(aptType);
+          });
+        }
+        // Occupants filter
+        if (occupants !== 'any') {
+          filteredRooms = filteredRooms.filter(room => {
+            if (!room.occupants) return false;
+            if (occupants === '5') return Number(room.occupants) >= 5;
+            return Number(room.occupants) === Number(occupants);
+          });
+        }
+        // Price filter
+        if (!isNaN(price) && price > 0) {
+          filteredRooms = filteredRooms.filter(room => {
+            if (!room.rate) return false;
+            // Try to extract number from rate string
+            let rateNum = 0;
+            if (typeof room.rate === 'number') rateNum = room.rate;
+            else {
+              const match = String(room.rate).replace(/,/g, '').match(/\d+/g);
+              if (match) rateNum = Number(match.join(''));
+            }
+            return rateNum <= price;
+          });
+        }
+        // Amenities filter
+        const selectedAmenities = Array.from(document.querySelectorAll('.amenity-chip.selected')).map(btn => btn.dataset.amenity);
+        if (selectedAmenities.length > 0) {
+          filteredRooms = filteredRooms.filter(room => {
+            if (!room.amenities) return false;
+            let ams = [];
+            try {
+              ams = typeof room.amenities === 'string' ? JSON.parse(room.amenities) : room.amenities;
+            } catch { ams = []; }
+            return selectedAmenities.every(sel => ams.includes(sel));
+          });
+        }
+        filteredRooms.forEach(async room => {
+          if (room.lat && room.lon) {
+            // Use saved coordinates
+            const marker = L.marker([room.lat, room.lon]);
+            marker.on('click', () => showRoomModal(room));
+            roomMarkers.push(marker);
+            if (!heatmapVisible) marker.addTo(map);
+          } else if (room.address) {
+            // (Optional) fallback to geocoding if lat/lon missing
+            let coords = await geocodeAddress(room.address);
+            if (coords) {
+              const marker = L.marker([coords.lat, coords.lon]);
+              marker.on('click', () => showRoomModal(room));
+              roomMarkers.push(marker);
+              if (!heatmapVisible) marker.addTo(map);
+            }
+          }
+        });
+      }
+      document.getElementById('apply-filter-btn').addEventListener('click', function() {
+        applyRoomFilterAndPins();
+      });
+      // Reset filters to default on page load
+      window.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('lease-term-select').selectedIndex = 0;
+        document.getElementById('apt-type-select').selectedIndex = 0;
+        document.getElementById('occupants-select').selectedIndex = 0;
+        priceSlider.value = 10000;
+        priceValueLabel.textContent = priceSlider.value;
+      });
+      // Initial fetch (show all rooms, unfiltered)
+      fetchRoomsAndAddPinsWithFilter();
+
+      // Price slider label update
+      const priceSlider = document.getElementById('price-slider');
+      const priceValueLabel = document.getElementById('price-value-label');
+      priceSlider.addEventListener('input', function() {
+        priceValueLabel.textContent = priceSlider.value;
+      });
+      // Set initial label value
+      priceValueLabel.textContent = priceSlider.value;
+
+      // Amenity chip toggle logic
+      document.querySelectorAll('.amenity-chip').forEach(btn => {
+        btn.addEventListener('click', function() {
+          btn.classList.toggle('selected');
+        });
+      });
+
+      // Amenity chip styles
+      const style = document.createElement('style');
+      style.textContent = `
+        .amenity-chip {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 8px 16px;
+          border-radius: 20px;
+          border: 1.5px solid #bbb;
+          background: #f3f3f3;
+          cursor: pointer;
+          font-size: 1em;
+          transition: background 0.2s, border-color 0.2s, color 0.2s;
+          user-select: none;
+        }
+        .amenity-chip.selected {
+          background: #6c4ab6;
+          color: #fff;
+          border-color: #6c4ab6;
+        }
+      `;
+      document.head.appendChild(style);
+
+      // Chat modal HTML (hidden by default)
+      const chatModalHtml = `
+        <div id="chat-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:4100; align-items:center; justify-content:center;">
+          <div style="background:#fff;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.18);padding:32px 24px;max-width:350px;width:90vw;position:relative;display:flex;flex-direction:column;align-items:stretch;">
+            <button id="close-chat-modal-btn" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:1.5em;color:#888;cursor:pointer;">&times;</button>
+            <h3 style="margin-top:0;color:#6c4ab6;">Message Owner</h3>
+            <textarea id="chat-message-input" rows="4" style="width:100%;border-radius:8px;border:1.5px solid #e0e0e0;padding:8px;font-size:1em;resize:vertical;margin-bottom:16px;" placeholder="Type your message..."></textarea>
+            <button id="send-chat-message-btn" style="padding:10px 24px;border-radius:8px;background:#6c4ab6;color:#fff;font-weight:600;border:none;cursor:pointer;width:100%;">Send</button>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', chatModalHtml);
+
+      // Chat icon click logic
+      document.body.addEventListener('click', function(e) {
+        if (e.target && (e.target.id === 'chat-modal-btn' || e.target.closest && e.target.closest('#chat-modal-btn'))) {
+          document.getElementById('chat-modal').style.display = 'flex';
+        }
+        if (e.target && e.target.id === 'close-chat-modal-btn') {
+          document.getElementById('chat-modal').style.display = 'none';
         }
       });
     </script>
-
-
+    <style>
+      /* Add carousel styles */
+      .carousel-container {
+        width: 100%;
+        max-width: 340px;
+        margin: 0 auto 18px auto;
+        position: relative;
+        overflow: hidden;
+        height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .carousel-track {
+        display: flex;
+        transition: transform 0.45s cubic-bezier(.4,2,.6,1);
+        will-change: transform;
+        height: 160px;
+      }
+      .carousel-img {
+        width: 320px;
+        height: 160px;
+        object-fit: cover;
+        border-radius: 12px;
+        margin: 0 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+        background: #eee;
+        flex-shrink: 0;
+      }
+      .carousel-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255,255,255,0.85);
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        font-size: 1.5em;
+        color: #6c4ab6;
+        cursor: pointer;
+        z-index: 2;
+        box-shadow: 0 2px 8px rgba(108,74,182,0.10);
+        transition: background 0.2s;
+      }
+      .carousel-arrow.left { left: 4px; }
+      .carousel-arrow.right { right: 4px; }
+      .carousel-arrow:active { background: #f3eaff; }
+    </style>
 </body>
 </html>

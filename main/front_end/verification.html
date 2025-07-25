@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>List Your Property</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f9f9f9;
+      color: #333;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    h1 {
+      margin-top: 32px;
+      margin-bottom: 16px;
+      font-size: 2.2rem;
+      text-align: center;
+    }
+    h2 {
+      border-bottom: 2px solid #eee;
+      padding-bottom: 10px;
+      margin-top: 60px;
+      margin-bottom: 24px;
+      font-size: 1.3rem;
+    }
+    .section {
+      margin-bottom: 48px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      padding: 32px 24px 24px 24px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 6px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    input[type="file"] {
+      padding: 0;
+      border: none;
+    }
+    .amenities button {
+      margin: 5px 10px 5px 0;
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1.5px solid #bbb;
+      background: #f3f3f3;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .amenities button.selected {
+      background: #6c4ab6;
+      color: #fff;
+      border-color: #6c4ab6;
+    }
+    .amenities .info {
+      display: inline-block;
+      margin-left: 6px;
+      color: #888;
+      cursor: pointer;
+      font-size: 1.1em;
+      vertical-align: middle;
+    }
+    .photos-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 10px;
+    }
+    .photos-preview .photo-thumb {
+      position: relative;
+      width: 140px;
+      height: 100px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1.5px solid #eee;
+      background: #fafafa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .photos-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    .remove-photo {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.1em;
+    }
+    .doc-picker {
+      border: 1.5px solid #eee;
+      border-radius: 10px;
+      padding: 12px;
+      background: #fafafa;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+    .doc-picker:hover {
+      border-color: #6c4ab6;
+    }
+    .doc-picker img {
+      width: 100%;
+      max-width: 120px;
+      aspect-ratio: 1/1;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-top: 8px;
+      border: 1px solid #eee;
+    }
+    .submit-btn {
+      margin-top: 40px;
+      padding: 14px 28px;
+      font-size: 16px;
+      background: #6c4ab6;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .submit-btn:disabled {
+      background: #bbb;
+      cursor: not-allowed;
+    }
+    .section-divider {
+      height: 2px;
+      background: #eee;
+      margin: 48px 0 32px 0;
+      border: none;
+    }
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 180px;
+      background-color: #222;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 8px 0;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -90px;
+      opacity: 0;
+      transition: opacity 0.2s;
+      font-size: 0.95em;
+    }
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+    .custom-upload {
+      border: 2px dashed #ccc;
+      border-radius: 8px;
+      width: 140px;
+      height: 140px;
+      margin: 0 auto;
+      padding: 0;
+      cursor: pointer;
+      background: #f8f8f8;
+      transition: border-color 0.2s, background 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .custom-upload:hover, .custom-upload.dragover {
+      border-color: #6c4ab6;
+      background: #f3f0fa;
+    }
+    .doc-picker {
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+    }
+    .doc-picker label {
+      min-height: 40px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      text-align: center;
+      width: 100%;
+      margin-bottom: 8px;
+    }
+    .host-verification-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 24px;
+      margin-bottom: 0;
+    }
+    @media (max-width: 1100px) {
+      .host-verification-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    @media (max-width: 700px) {
+      .host-verification-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 500px) {
+      .host-verification-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .property-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+      padding: 36px 48px 32px 48px;
+      margin-bottom: 48px;
+    }
+    .property-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px 48px;
+      margin-top: 18px;
+      margin-bottom: 18px;
+    }
+    .full-width-field {
+      grid-column: 1 / 3;
+    }
+    .property-fields > div {
+      min-width: 0;
+    }
+    @media (max-width: 900px) {
+      .property-fields {
+        grid-template-columns: 1fr;
+      }
+    }
+    .property-label {
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.08em;
+    }
+    .property-label svg {
+      width: 1.1em;
+      height: 1.1em;
+      color: #6c4ab6;
+    }
+    .property-input, .property-select, .property-textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1.08em;
+      background: #faf9ff;
+      transition: border-color 0.2s;
+      margin-bottom: 18px;
+    }
+    .property-input:focus, .property-select:focus, .property-textarea:focus {
+      border-color: #6c4ab6;
+      outline: none;
+    }
+    .amenities-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 6px;
+    }
+    .amenity-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1.5px solid #bbb;
+      background: #f3f3f3;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+      user-select: none;
+    }
+    .amenity-chip.selected {
+      background: #6c4ab6;
+      color: #fff;
+      border-color: #6c4ab6;
+    }
+    .amenity-chip svg {
+      width: 1.1em;
+      height: 1.1em;
+    }
+    .property-textarea {
+      min-height: 70px;
+      resize: vertical;
+    }
+    .date-input-wrapper {
+      position: relative;
+      max-width: 260px;
+      width: 100%;
+      margin-bottom: 18px;
+    }
+    .date-input-wrapper input[type="date"] {
+      padding-right: 38px;
+      max-width: 260px;
+      width: 100%;
+    }
+    .date-input-wrapper .calendar-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: #6c4ab6;
+      width: 1.2em;
+      height: 1.2em;
+    }
+    .property-card .property-input,
+    .property-card .property-select {
+      margin-top: 6px;
+    }
+    .property-card .property-textarea {
+      margin-top: 10px;
+      margin-bottom: 24px;
+    }
+    .property-select,
+    .property-type-select {
+      width: 100%;
+      /* Remove or comment out any max-width property */
+      max-width: none;
+    }
+    .property-fields > div {
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      margin: 0;
+    }
+    .property-select,
+    .property-input {
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      margin: 0;
+    }
+    .photo-upload-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      padding: 32px 24px 24px 24px;
+      margin-bottom: 48px;
+    }
+    .photo-drop-area {
+      border: 2px dashed #bbb;
+      border-radius: 10px;
+      background: #fafafa;
+      padding: 32px 0 24px 0;
+      text-align: center;
+      color: #888;
+      font-size: 1.1em;
+      cursor: pointer;
+      margin-bottom: 18px;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+    .photo-drop-area:hover, .photo-drop-area.dragover {
+      border-color: #6c4ab6;
+      background: #f3f0fa;
+    }
+    .photo-drop-area .photo-upload-icon {
+      font-size: 2.2em;
+      color: #bdbdbd;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .photos-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 10px;
+    }
+    .photos-preview .photo-thumb {
+      position: relative;
+      width: 140px;
+      height: 100px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1.5px solid #eee;
+      background: #fafafa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      transition: box-shadow 0.2s;
+    }
+    .photos-preview .photo-thumb:hover {
+      box-shadow: 0 4px 16px rgba(108,74,182,0.10);
+    }
+    .photos-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    .remove-photo {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.1em;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .photo-thumb:hover .remove-photo {
+      opacity: 1;
+    }
+    .photo-counter {
+      font-size: 1em;
+      color: #6c4ab6;
+      margin-bottom: 8px;
+      text-align: right;
+    }
+    .photo-warning {
+      color: #b91c1c;
+      font-size: 1em;
+      margin-bottom: 8px;
+      background: #fff4f4;
+      border-radius: 6px;
+      padding: 8px 12px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+    <a href="room_registration.html" id="back-to-home-link" style="position: fixed; top: 20px; left: 20px; z-index: 2000; text-decoration: none; color: #000000; font-weight: 700; font-size: 22px; background: #fff; border-radius: 12px; border: 1.5px solid #e0e0e0; padding: 10px 18px; box-shadow: 0 2px 8px rgba(128,90,213,0.06); transition: border-color 0.2s, box-shadow 0.2s; display: flex; align-items: center; justify-content: center;">&#8592;</a>
+
+  <div class="container">
+    <h1>Register Your Property</h1>
+    <!-- Section 1: Verification -->
+    <div class="section">
+      <h2>Host Verification Requirements</h2>
+      <div class="host-verification-grid">
+        <div class="doc-picker" ondragover="event.preventDefault()" ondrop="handleDocDrop(event, 'doc-id')">
+          <label>Government-issued ID</label>
+          <input type="file" accept="image/*" id="input-doc-id" style="display:none;" onchange="previewDocImage(event, 'doc-id')">
+          <div class="custom-upload" onclick="document.getElementById('input-doc-id').click()" id="custom-doc-id">
+            <span class="placeholder" id="placeholder-doc-id" style="display:block;color:#aaa;font-size:1.1em;">Click or Drag to Upload</span>
+            <img id="doc-id" src="id.png" alt="Government ID" style="display:none;">
+            <span class="file-name" id="file-doc-id" style="display:none;font-size:0.95em;color:#555;"></span>
+          </div>
+        </div>
+        <div class="doc-picker" ondragover="event.preventDefault()" ondrop="handleDocDrop(event, 'doc-ownership')">
+          <label>Proof of Ownership / Rights to Rent</label>
+          <input type="file" accept="image/*" id="input-doc-ownership" style="display:none;" onchange="previewDocImage(event, 'doc-ownership')">
+          <div class="custom-upload" onclick="document.getElementById('input-doc-ownership').click()" id="custom-doc-ownership">
+            <span class="placeholder" id="placeholder-doc-ownership" style="display:block;color:#aaa;font-size:1.1em;">Click or Drag to Upload</span>
+            <img id="doc-ownership" src="ownership.png" alt="Ownership" style="display:none;">
+            <span class="file-name" id="file-doc-ownership" style="display:none;font-size:0.95em;color:#555;"></span>
+          </div>
+        </div>
+        <div class="doc-picker" ondragover="event.preventDefault()" ondrop="handleDocDrop(event, 'doc-permit')">
+          <label>Permit to Lease</label>
+          <input type="file" accept="image/*" id="input-doc-permit" style="display:none;" onchange="previewDocImage(event, 'doc-permit')">
+          <div class="custom-upload" onclick="document.getElementById('input-doc-permit').click()" id="custom-doc-permit">
+            <span class="placeholder" id="placeholder-doc-permit" style="display:block;color:#aaa;font-size:1.1em;">Click or Drag to Upload</span>
+            <img id="doc-permit" src="permit.png" alt="Permit" style="display:none;">
+            <span class="file-name" id="file-doc-permit" style="display:none;font-size:0.95em;color:#555;"></span>
+          </div>
+        </div>
+        <div class="doc-picker" ondragover="event.preventDefault()" ondrop="handleDocDrop(event, 'doc-residency')">
+          <label>Proof of Residency</label>
+          <input type="file" accept="image/*" id="input-doc-residency" style="display:none;" onchange="previewDocImage(event, 'doc-residency')">
+          <div class="custom-upload" onclick="document.getElementById('input-doc-residency').click()" id="custom-doc-residency">
+            <span class="placeholder" id="placeholder-doc-residency" style="display:block;color:#aaa;font-size:1.1em;">Click or Drag to Upload</span>
+            <img id="doc-residency" src="residency.png" alt="Residency" style="display:none;">
+            <span class="file-name" id="file-doc-residency" style="display:none;font-size:0.95em;color:#555;"></span>
+          </div>
+        </div>
+        <div class="doc-picker" ondragover="event.preventDefault()" ondrop="handleDocDrop(event, 'doc-utility')">
+          <label>Utility Bill</label>
+          <input type="file" accept="image/*" id="input-doc-utility" style="display:none;" onchange="previewDocImage(event, 'doc-utility')">
+          <div class="custom-upload" onclick="document.getElementById('input-doc-utility').click()" id="custom-doc-utility">
+            <span class="placeholder" id="placeholder-doc-utility" style="display:block;color:#aaa;font-size:1.1em;">Click or Drag to Upload</span>
+            <img id="doc-utility" src="utility.png" alt="Utility Bill" style="display:none;">
+            <span class="file-name" id="file-doc-utility" style="display:none;font-size:0.95em;color:#555;"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr class="section-divider"/>
+    <!-- Section 2: Property Details -->
+    <div class="property-card">
+      <h2 style="margin-top:0;">Property Details</h2>
+      <div class="property-fields">
+        <div>
+          <div class="property-label">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0h6"/></svg>
+            Property Type
+          </div>
+          <select class="property-select">
+            <option disabled selected>Select property type</option>
+            <option>Apartment</option>
+            <option>Condo</option>
+            <option>House</option>
+            <option>Dorm House</option>
+          </select>
+        </div>
+        <div>
+          <div class="property-label">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 0V4m0 8v8"/></svg>
+            Monthly/Yearly Rate
+          </div>
+          <input class="property-input" type="text" placeholder="e.g. ₱18,000/month or ₱200,000/year" />
+        </div>
+        <div class="full-width-field">
+          <div class="property-label">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m9-7V7a4 4 0 00-8 0v2m12 4v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-6"/></svg>
+            Full Address
+          </div>
+          <input class="property-input" type="text" placeholder="e.g. 123 Main St, Makati, Metro Manila" />
+        </div>
+        <div>
+          <div class="property-label">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 17l4 4 4-4m-4-5v9"/></svg>
+            Minimum Lease Term
+          </div>
+          <input class="property-input" type="text" placeholder="e.g. 6 months" />
+        </div>
+        <div>
+          <div class="property-label">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            Max Occupants
+          </div>
+          <input class="property-input" type="text" placeholder="e.g. 4" />
+        </div>
+        <div>
+          <div class="property-label">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>
+            Size (sqm or sq. ft.)
+          </div>
+          <input class="property-input" type="text" placeholder="e.g. 45 sqm" />
+        </div>
+      </div>
+      <div style="margin-top:28px;">
+        <div class="property-label" style="margin-bottom:2px;">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg>
+          Amenities
+          <span class="tooltip info" style="margin-left:4px;">&#9432;
+            <span class="tooltiptext">Select all amenities that apply. Click again to deselect.</span>
+          </span>
+        </div>
+        <div class="amenities-chips">
+          <div class="amenity-chip" data-amenity="WiFi" onclick="toggleAmenity(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/><path d="M7 9V7a5 5 0 0110 0v2"/><rect x="5" y="9" width="14" height="10" rx="2"/></svg>WiFi</div>
+          <div class="amenity-chip" data-amenity="Aircon" onclick="toggleAmenity(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M16 3v4"/></svg>Aircon</div>
+          <div class="amenity-chip" data-amenity="Furnished" onclick="toggleAmenity(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V3h8v4"/></svg>Furnished</div>
+          <div class="amenity-chip" data-amenity="Parking" onclick="toggleAmenity(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="13" rx="2"/><path d="M16 3v4"/></svg>Parking</div>
+          <div class="amenity-chip" data-amenity="More" onclick="toggleAmenity(this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>More</div>
+        </div>
+      </div>
+      <div style="margin-top:28px;">
+        <div class="property-label">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7h18"/></svg>
+          Rules
+        </div>
+        <textarea class="property-textarea" rows="3" placeholder="e.g. No smoking, no pets, etc."></textarea>
+      </div>
+      <div style="margin-top:28px;">
+        <div class="property-label">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/></svg>
+          Move-in Availability Date
+        </div>
+        <div class="date-input-wrapper">
+          <input class="property-input" type="date" />
+      </div>
+      </div>
+    </div>
+    <hr class="section-divider"/>
+    <!-- Section 3: Photos -->
+    <div class="photo-upload-card">
+      <h2>Room Photos <span style="font-size:0.95em;font-weight:400;">(min. of 5)</span></h2>
+      <div class="photo-counter" id="photo-counter">0/5 uploaded</div>
+      <div class="photo-drop-area" id="photo-drop-area" onclick="document.getElementById('photo-input').click()">
+        <span class="photo-upload-icon">📷</span>
+        <span>Click or Drag to Upload</span>
+        <input type="file" id="photo-input" accept="image/*" multiple onchange="handlePhotoUpload(event)" style="display:none;"/>
+      </div>
+      <div id="photo-warning" class="photo-warning" style="display:none;">Please upload at least 5 photos.</div>
+      <div class="photos-preview" id="photos-preview"></div>
+    </div>
+    <hr class="section-divider"/>
+    <!-- Section 4: Submit -->
+    <div style="text-align:center;">
+      <button class="submit-btn" id="submit-btn" disabled>Submit</button>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script>
+    // Document picker preview
+    function previewDocImage(event, previewId) {
+      const input = event.target;
+      const file = input.files && input.files[0];
+      const preview = document.getElementById(previewId);
+      const placeholder = document.getElementById('placeholder-' + previewId);
+      const fileNameSpan = document.getElementById('file-' + previewId);
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+          placeholder.style.display = 'none';
+          fileNameSpan.textContent = file.name;
+          fileNameSpan.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    function handleDocDrop(event, previewId) {
+      event.preventDefault();
+      const input = document.getElementById('input-' + previewId);
+      input.files = event.dataTransfer.files;
+      previewDocImage({target: input}, previewId);
+    }
+    // Amenities toggle
+    function toggleAmenity(btn) {
+      btn.classList.toggle('selected');
+    }
+    // Room photos upload and preview
+    let photoFiles = [];
+    function handlePhotoUpload(event) {
+      const files = Array.from(event.target.files);
+      photoFiles = files;
+      renderPhotoPreviews();
+      validatePhotoCount();
+      updatePhotoCounter();
+    }
+    function renderPhotoPreviews() {
+      const previewDiv = document.getElementById('photos-preview');
+      previewDiv.innerHTML = '';
+      photoFiles.forEach((file, idx) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const div = document.createElement('div');
+          div.className = 'photo-thumb';
+          div.innerHTML = `<img src="${e.target.result}" alt="Room Photo ${idx+1}"><button class='remove-photo' onclick='removePhoto(${idx})' title='Remove'>&times;</button>`;
+          previewDiv.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+      });
+      updatePhotoCounter();
+    }
+    function removePhoto(idx) {
+      photoFiles.splice(idx, 1);
+      renderPhotoPreviews();
+      validatePhotoCount();
+      updatePhotoCounter();
+      // Reset file input if all photos removed
+      if (photoFiles.length === 0) {
+        document.getElementById('photo-input').value = '';
+      }
+    }
+    function validatePhotoCount() {
+      const warning = document.getElementById('photo-warning');
+      const submitBtn = document.getElementById('submit-btn');
+      if (photoFiles.length < 5) {
+        warning.style.display = 'inline-block';
+        submitBtn.disabled = true;
+      } else {
+        warning.style.display = 'none';
+        submitBtn.disabled = false;
+      }
+    }
+    function updatePhotoCounter() {
+      const counter = document.getElementById('photo-counter');
+      counter.textContent = `${photoFiles.length}/5 uploaded`;
+    }
+    // Drag and drop for photo area
+    const photoDropArea = document.getElementById('photo-drop-area');
+    if (photoDropArea) {
+      photoDropArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        photoDropArea.classList.add('dragover');
+      });
+      photoDropArea.addEventListener('dragleave', function(e) {
+        photoDropArea.classList.remove('dragover');
+      });
+      photoDropArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        photoDropArea.classList.remove('dragover');
+        const files = Array.from(e.dataTransfer.files);
+        document.getElementById('photo-input').files = e.dataTransfer.files;
+        handlePhotoUpload({ target: { files: files } });
+      });
+    }
+
+function prefillRoomForm(room) {
+  if (!room) return;
+  document.querySelector('.property-select').value = room.type || '';
+  document.querySelector('.property-card input[placeholder*="Main St"]').value = room.address || '';
+  document.querySelector('.property-card input[placeholder*="₱18,000"]').value = room.rate || '';
+  document.querySelector('.property-card input[placeholder*="6 months"]').value = room.lease || '';
+  document.querySelector('.property-card input[placeholder*="e.g. 4"]').value = room.occupants || '';
+  document.querySelector('.property-card input[placeholder*="45 sqm"]').value = room.size || '';
+  // Move-in date (ensure format)
+  if (room.move_in_date) {
+    document.querySelector('.date-input-wrapper input[type="date"]').value = room.move_in_date.slice(0, 10);
+  }
+  // Rules
+  document.querySelector('.property-textarea').value = room.rules || '';
+  // Amenities
+  document.querySelectorAll('.amenity-chip.selected').forEach(el => el.classList.remove('selected'));
+  let amenities = [];
+  if (room.amenities) {
+    try {
+      amenities = typeof room.amenities === 'string' ? JSON.parse(room.amenities) : room.amenities;
+    } catch { amenities = []; }
+  }
+  amenities.forEach(am => {
+    document.querySelectorAll('.amenity-chip').forEach(chip => {
+      if (chip.dataset.amenity === am) chip.classList.add('selected');
+    });
+  });
+  // Prefill image previews
+  if (room.image_url) {
+    let urls = [];
+    try {
+      urls = typeof room.image_url === 'string' ? JSON.parse(room.image_url) : room.image_url;
+    } catch { urls = []; }
+    const previewDiv = document.getElementById('photos-preview');
+    previewDiv.innerHTML = '';
+    urls.forEach((url, idx) => {
+      const div = document.createElement('div');
+      div.className = 'photo-thumb';
+      div.innerHTML = `<img src="${url}" alt="Room Photo ${idx+1}"><button class='remove-photo' onclick='removeExistingPhoto(${idx})' title='Remove'>&times;</button>`;
+      previewDiv.appendChild(div);
+    });
+    window.existingImageUrls = urls;
+  } else {
+    window.existingImageUrls = [];
+  }
+}
+
+function removeExistingPhoto(idx) {
+  window.existingImageUrls.splice(idx, 1);
+  // Re-render previews
+  const previewDiv = document.getElementById('photos-preview');
+  previewDiv.innerHTML = '';
+  window.existingImageUrls.forEach((url, i) => {
+    const div = document.createElement('div');
+    div.className = 'photo-thumb';
+    div.innerHTML = `<img src="${url}" alt="Room Photo ${i+1}"><button class='remove-photo' onclick='removeExistingPhoto(${i})' title='Remove'>&times;</button>`;
+    previewDiv.appendChild(div);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+  const editRoomId = localStorage.getItem('editRoomId');
+  if (editRoomId) {
+    try {
+      const response = await fetch(`http://localhost:3000/rooms/${editRoomId}`);
+      const room = await response.json();
+      if (room) prefillRoomForm(room);
+    } catch {}
+  }
+});
+
+function getRoomDetailsFromForm() {
+  const type = document.querySelector('.property-select').value;
+  const address = document.querySelector('.property-card input[placeholder*="Main St"]')?.value || '';
+  const rate = document.querySelector('.property-card input[placeholder*="₱18,000"]')?.value || '';
+  const lease = document.querySelector('.property-card input[placeholder*="6 months"]')?.value || '';
+  const occupants = document.querySelector('.property-card input[placeholder*="e.g. 4"]')?.value || '';
+  const size = document.querySelector('.property-card input[placeholder*="45 sqm"]')?.value || '';
+  const move_in_date = document.querySelector('.date-input-wrapper input[type="date"]')?.value || '';
+  const rules = document.querySelector('.property-textarea')?.value || '';
+  const amenities = Array.from(document.querySelectorAll('.amenity-chip.selected')).map(el => el.textContent.trim());
+  return { type, address, rate, lease, occupants, size, status: 'Pending', move_in_date, amenities: JSON.stringify(amenities), rules };
+}
+
+const supabaseUrl = 'https://kfnnfahxjlenrmtupbzr.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtmbm5mYWh4amxlbnJtdHVwYnpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyNzM3NDYsImV4cCI6MjA2ODg0OTc0Nn0.QWjtXLvqBfITaKgDzw7lIH-aSIeh8DPmlY_kAmBvfHk';
+const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+async function uploadImageToSupabase(file) {
+  if (!file) return null;
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${Date.now()}.${fileExt}`;
+  const { data, error } = await supabaseClient.storage
+    .from('room-photos')
+    .upload(fileName, file);
+  if (error) {
+    console.error('Supabase Storage upload error:', error, data);
+    alert('Image upload failed!');
+    return null;
+  }
+  const { data: publicUrlData } = supabaseClient
+    .storage
+    .from('room-photos')
+    .getPublicUrl(fileName);
+  return publicUrlData.publicUrl;
+}
+
+async function uploadImagesToSupabase(files) {
+  const urls = [];
+  for (const file of files) {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
+    const { data, error } = await supabaseClient.storage
+      .from('room-photos')
+      .upload(fileName, file);
+    if (!error) {
+      const { data: publicUrlData } = supabaseClient
+        .storage
+        .from('room-photos')
+        .getPublicUrl(fileName);
+      urls.push(publicUrlData.publicUrl);
+    } else {
+      console.error('Supabase Storage upload error:', error, data);
+    }
+  }
+  return urls;
+}
+
+const submitBtn = document.getElementById('submit-btn');
+if (submitBtn) {
+  submitBtn.addEventListener('click', async function(e) {
+    e.preventDefault();
+    if (submitBtn.disabled) return;
+    const newRoom = getRoomDetailsFromForm();
+
+    // Upload all images if present
+    const fileInput = document.getElementById('photo-input');
+    const files = fileInput && fileInput.files.length > 0 ? Array.from(fileInput.files).slice(0, 10) : [];
+    let imageUrls = window.existingImageUrls || [];
+    if (files.length > 0) {
+      const uploadedUrls = await uploadImagesToSupabase(files);
+      if (uploadedUrls.length > 0) imageUrls = imageUrls.concat(uploadedUrls);
+    }
+    newRoom.image_url = JSON.stringify(imageUrls);
+
+    const editRoomId = localStorage.getItem('editRoomId');
+    try {
+      let response, result;
+      if (editRoomId) {
+        response = await fetch(`http://localhost:3000/rooms/${editRoomId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newRoom)
+        });
+        localStorage.removeItem('editRoomId');
+      } else {
+        response = await fetch('http://localhost:3000/rooms', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newRoom)
+        });
+      }
+      result = await response.json();
+      if (response.ok) {
+        alert('Room saved to Supabase!');
+        window.location.href = 'room_registration.html';
+      } else {
+        alert(result.message || 'Room save failed!');
+      }
+    } catch (err) {
+      alert('Error saving room!');
+    }
+  });
+}
+  </script>
+</body>
+</html>

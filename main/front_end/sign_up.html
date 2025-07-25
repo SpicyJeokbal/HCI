@@ -4,37 +4,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Sign Up</title>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        font-family: Inter, Arial, sans-serif;
+        background: linear-gradient(135deg, #f3e7fa 0%, #e3eafc 100%);
+      }
+      body {
+        min-height: 100vh;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+      }
+      .signup-container {
+        width: 100vw;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        background: transparent;
+        box-sizing: border-box;
+        padding: 0 16px;
+      }
+      .signup-box {
+        width: 100%;
+        max-width: 480px;
+        background: #fff;
+        border-radius: 24px;
+        box-shadow: 0 4px 32px rgba(0,0,0,0.10);
+        padding: 40px 28px 32px 28px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        margin-top: 8vh;
+      }
+      .signup-title {
+        color: black;
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 32px;
+        text-align: left;
+        letter-spacing: -1px;
+      }
+      .signup-label {
+        color: #222;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        margin-top: 18px;
+      }
+      .signup-input {
+        width: 100%;
+        padding: 12px 8px;
+        font-size: 1rem;
+        border: none;
+        border-bottom: 1.5px solid #bbb;
+        background: transparent;
+        outline: none;
+        margin-bottom: 8px;
+        opacity: 0.85;
+        transition: border-color 0.2s;
+      }
+      .signup-input:focus {
+        border-bottom: 1.5px solid #a084e8;
+        background: #f7f3ff;
+      }
+      .password-row {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+      .toggle-password {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 18px;
+        user-select: none;
+        display: flex;
+        align-items: center;
+      }
+      .signup-btn {
+        width: 100%;
+        background: linear-gradient(90deg, #6c4ab6 0%, #a084e8 100%);
+        color: white;
+        border-radius: 40px;
+        padding: 18px 0;
+        font-size: 1.2rem;
+        font-weight: 700;
+        border: none;
+        margin-top: 32px;
+        cursor: pointer;
+        transition: background 0.2s, box-shadow 0.2s;
+        box-shadow: 0 2px 8px rgba(160,132,232,0.10);
+      }
+      .signup-btn:hover {
+        background: linear-gradient(90deg, #5a3a99 0%, #7c5fd3 100%);
+        box-shadow: 0 4px 16px rgba(160,132,232,0.18);
+      }
+      .login-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 32px;
+        font-size: 1rem;
+      }
+      .login-link {
+        color: #6c4ab6;
+        font-weight: 700;
+        margin-left: 8px;
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .login-link:hover {
+        color: #a084e8;
+        text-decoration: underline;
+      }
+      @media (min-width: 1024px) {
+        body {
+          align-items: flex-start;
+        }
+        .signup-container {
+          flex-direction: row;
+          justify-content: center;
+          align-items: flex-start;
+          padding: 0 5vw;
+        }
+        .signup-box {
+          width: 420px;
+          max-width: 520px;
+          padding: 56px 56px 40px 56px;
+          margin-top: 12vh;
+        }
+        .signup-title {
+          font-size: 2.8rem;
+        }
+        .signup-btn {
+          font-size: 1.4rem;
+        }
+      }
+    </style>
 </head>
 <body>
-    
-    <div style="width: 360px; height: 800px; position: relative; background: white; overflow: hidden">
-        <div style="left: 34px; top: 112px; position: absolute; color: black; font-size: 32px; font-family: Inter; font-weight: 600; word-wrap: break-word">Create a new<br/>account</div>
-
-        <div style="left: 34px; top: 233px; position: absolute; color: black; font-size: 16px; font-family: Inter; font-weight: 600; word-wrap: break-word">Name:</div>
-        <input type="text" placeholder="John Doe" style="width: 305px; height: 32px; left: 34px; top: 260px; position: absolute; border: none; border-bottom: 1px solid #000; opacity: 0.6; font-size: 16px; font-family: Inter; outline: none; background: transparent;">
-
-        <div style="left: 34px; top: 364px; position: absolute; color: black; font-size: 16px; font-family: Inter; font-weight: 600; word-wrap: break-word">Email:</div>
-        <input type="email" placeholder="JohnDoe@email.com" style="width: 305px; height: 32px; left: 34px; top: 391px; position: absolute; border: none; border-bottom: 1px solid #000; opacity: 0.6; font-size: 16px; font-family: Inter; outline: none; background: transparent;">
-        
-        <div style="left: 34px; top: 486px; position: absolute; color: black; font-size: 16px; font-family: Inter; font-weight: 600; word-wrap: break-word">Password:</div>
-        <input id="passwordInput" type="password" placeholder="Enter your password" style="width: 270px; height: 32px; left: 34px; top: 513px; position: absolute; border: none; border-bottom: 1px solid #000; opacity: 0.6; font-size: 16px; font-family: Inter; outline: none; background: transparent; padding-right: 30px;">
-        <span id="togglePassword" style="position: absolute; left: 310px; top: 520px; cursor: pointer; font-size: 18px; user-select: none; display: flex; align-items: center;">
-          <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;"><ellipse cx="12" cy="12" rx="9" ry="5"/><circle cx="12" cy="12" r="3"/></svg>
-          <svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><ellipse cx="12" cy="12" rx="9" ry="5"/><line x1="1" y1="23" x2="23" y2="1"/></svg>
-        </span>
-
-        <div style="left: 81px; top: 733px; position: absolute; color: #726060; font-size: 15px; font-family: Inter; font-weight: 600; word-wrap: break-word">Already have an account?</div>
-
-        <a href="login.html" style="text-decoration: none;"><div style="left: 255px; top: 733px; position: absolute; color: black; font-size: 15px; font-family: Inter; font-weight: 700; word-wrap: break-word">Login</div></a>
-
-        <div style="width: 305px; height: 54px; left: 34px; top: 612px; position: absolute; background: black; border-radius: 40px"></div>
-        
-        <div style="left: 157px; top: 630px; position: absolute; color: white; font-size: 16px; font-family: Inter; font-weight: 600; word-wrap: break-word">Sign up</div>
-      </div>
-
+    <div class="signup-container">
+      <form class="signup-box">
+        <div class="signup-title">Create a new<br/>account</div>
+        <label class="signup-label" for="name">Name:</label>
+        <input class="signup-input" type="text" id="name" name="name" placeholder="John Doe">
+        <label class="signup-label" for="email">Email:</label>
+        <input class="signup-input" type="email" id="email" name="email" placeholder="JohnDoe@email.com">
+        <label class="signup-label" for="passwordInput">Password:</label>
+        <div class="password-row">
+          <input id="passwordInput" class="signup-input" type="password" name="password" placeholder="Enter your password">
+          <span id="togglePassword" class="toggle-password">
+            <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;"><ellipse cx="12" cy="12" rx="9" ry="5"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><ellipse cx="12" cy="12" rx="9" ry="5"/><line x1="1" y1="23" x2="23" y2="1"/></svg>
+          </span>
+        </div>
+        <button type="submit" class="signup-btn">Sign up</button>
+        <div class="login-row">
+          <span>Already have an account?</span>
+          <a href="login.html" class="login-link">Login</a>
+        </div>
+      </form>
+    </div>
 <script>
   const passwordInput = document.getElementById('passwordInput');
+
+  const signupForm = document.querySelector('.signup-box')
+
+  signupForm.addEventListener('submit', async (e) => {
+    e.preventDefault()
+
+    const name = document.getElementById('name').value
+    const email = document.getElementById('email').value
+    const password = document.getElementById('passwordInput').value
+
+    const response = await fetch('http://localhost:3000/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password })
+    })
+
+    const result = await response.json()
+    alert(result.message)
+  })
+
+
   const togglePassword = document.getElementById('togglePassword');
   const eyeOpen = document.getElementById('eyeOpen');
   const eyeClosed = document.getElementById('eyeClosed');
@@ -46,7 +208,6 @@
     eyeClosed.style.display = passwordVisible ? 'inline' : 'none';
   });
 </script>
-
 </body>
 </html>
 
