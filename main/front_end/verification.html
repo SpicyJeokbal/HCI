@@ -799,7 +799,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   const editRoomId = localStorage.getItem('editRoomId');
   if (editRoomId) {
     try {
-      const response = await fetch(`http://localhost:3000/rooms/${editRoomId}`);
+      const response = await fetch(`https://hci-7x9n.onrender.com/rooms/${editRoomId}`);
       const room = await response.json();
       if (room) prefillRoomForm(room);
     } catch {}
@@ -884,14 +884,16 @@ if (submitBtn) {
     try {
       let response, result;
       if (editRoomId) {
-        response = await fetch(`http://localhost:3000/rooms/${editRoomId}`, {
+        //https://hci-7x9n.onrender.com/rooms/${editRoomId}
+        response = await fetch(`https://hci-7x9n.onrender.com/rooms/${editRoomId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newRoom)
         });
         localStorage.removeItem('editRoomId');
       } else {
-        response = await fetch('http://localhost:3000/rooms', {
+        //https://hci-7x9n.onrender.com/rooms
+        response = await fetch('https://hci-7x9n.onrender.com/rooms', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newRoom)
