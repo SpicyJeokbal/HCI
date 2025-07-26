@@ -14,6 +14,16 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY
 app.use(cors())
 app.use(express.json())
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    message: 'Server is running',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  })
+})
+
 async function geocodeAddress(address) {
   const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
   const res = await fetch(url);
