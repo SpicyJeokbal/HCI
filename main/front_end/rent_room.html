@@ -337,7 +337,7 @@
           // Remove existing markers before re-adding
           roomMarkers.forEach(marker => map.removeLayer(marker));
           roomMarkers = [];
-          const response = await fetch('http://localhost:3000/rooms');
+          const response = await fetch('https://hci-7x9n.onrender.com/rooms');
           const rooms = await response.json();
           console.log('Fetched rooms:', rooms);
           for (const room of rooms) {
@@ -431,14 +431,14 @@
             let response, result;
             if (reviewToEdit && reviewToEdit.id) {
               // Edit existing review
-              response = await fetch(`http://localhost:3000/reviews/${reviewToEdit.id}`, {
+              response = await fetch(`https://hci-7x9n.onrender.com/reviews/${reviewToEdit.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, comment: text })
               });
             } else {
               // New review
-              response = await fetch('http://localhost:3000/reviews', {
+              response = await fetch('https://hci-7x9n.onrender.com/reviews', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ room_id: room.id, name, comment: text })
@@ -483,7 +483,7 @@
         // Fetch reviews from backend
         let reviews = [];
         try {
-          const res = await fetch(`http://localhost:3000/reviews/${room.id}`);
+          const res = await fetch(`https://hci-7x9n.onrender.com/reviews/${room.id}`);
           reviews = await res.json();
         } catch {}
         content.innerHTML = `
@@ -654,7 +654,7 @@
         try {
           roomMarkers.forEach(marker => map.removeLayer(marker));
           roomMarkers = [];
-          const response = await fetch('http://localhost:3000/rooms');
+          const response = await fetch('https://hci-7x9n.onrender.com/rooms');
           const rooms = await response.json();
           lastRooms = rooms;
           applyRoomFilterAndPins();
