@@ -13,7 +13,8 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY
 // middleware
 app.use(cors({
   origin: [
-    'https://hci-7x9n.onrender.com',
+    'https://hci-1-bmr4.onrender.com', //frontend
+    'https://hci-7x9n.onrender.com', //backend
     'http://127.0.0.1:5507',
     'http://127.0.0.1:5505',
     'http://localhost:5502',
