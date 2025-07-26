@@ -207,4 +207,6 @@ app.listen(port, () => {
   console.log(`Health check available at http://localhost:${port}/health`)
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`)
   console.log(`Supabase URL configured: ${process.env.SUPABASE_URL ? 'Yes' : 'No'}`)
+  console.log(`PORT from environment: ${process.env.PORT}`)
+  console.log(`Using port: ${port}`)
 })
