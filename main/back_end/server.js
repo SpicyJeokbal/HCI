@@ -5,7 +5,7 @@ import express from 'express'
 import fetch from 'node-fetch'
 
 const app = express()
-const port = 3000
+const port = process.env.PORT || 3000
 
 // create Supabase client
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY)
@@ -21,6 +21,21 @@ app.get('/health', (req, res) => {
     message: 'Server is running',
     timestamp: new Date().toISOString(),
     uptime: process.uptime()
+  })
+})
+
+// Root endpoint for basic testing
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'HCI Backend Server is running',
+    endpoints: {
+      health: '/health',
+      signup: '/signup',
+      login: '/login',
+      rooms: '/rooms',
+      reviews: '/reviews'
+    },
+    timestamp: new Date().toISOString()
   })
 })
 
@@ -189,4 +204,7 @@ app.put('/reviews/:id', async (req, res) => {
 // start server
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`)
+  console.log(`Health check available at http://localhost:${port}/health`)
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`)
+  console.log(`Supabase URL configured: ${process.env.SUPABASE_URL ? 'Yes' : 'No'}`)
 })
