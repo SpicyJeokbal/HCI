@@ -11,7 +11,21 @@ const port = process.env.PORT || 3000
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY)
 
 // middleware
-app.use(cors())
+app.use(cors({
+  origin: [
+    'https://hci-7x9n.onrender.com',
+    'http://127.0.0.1:5507',
+    'http://127.0.0.1:5505',
+    'http://localhost:5502',
+    'http://127.0.0.1:3001',  
+    'http://localhost:3001',
+    'http://localhost:3000',
+    'http://localhost:5505',
+    'http://localhost:5507'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type']
+}))
 app.use(express.json())
 
 // Health check endpoint
